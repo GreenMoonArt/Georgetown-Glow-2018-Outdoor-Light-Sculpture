@@ -1,3 +1,6 @@
+// Node 2 is the second figure in the group. It receives messages from Node 1 and transmits them to Node 3. 
+// The Node 2 figure is the same size as the Node 1 figure. 
+
 // Pattern types supported:
 enum  pattern { NONE, RAINBOW_CYCLE, SCANNER, FADE, OFF };   // THEATER_CHASE, COLOR_WIPE, 
 // Patern directions supported:
