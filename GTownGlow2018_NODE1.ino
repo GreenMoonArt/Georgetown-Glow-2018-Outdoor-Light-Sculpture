@@ -1,11 +1,16 @@
-/*
- * Code for Georgetown Glow 2018. 
+/* NODE 1 is the "leader" of the group of figures. 
+ * 
+ * Code for Georgetown Glow 2018 outdoor light sculpture, "Friends."  
  * Using 5 NeoPixel strands to form a gesture drawing figure. 
  * Borrowed heavily from https://learn.adafruit.com/multi-tasking-the-arduino-part-3/put-it-all-together-dot-dot-dot
- * Also used some parts of @GreenMoonArt icicle code 
+ * Also used some parts of @GreenMoonArt icicle code at https://gist.github.com/GreenMoonArt/9e850706f56dbaa505eeecf89679c60b
  * 
  * 915 MHz RF info: https://learn.sparkfun.com/tutorials/rfm69hcw-hookup-guide
  * RFM96 Library: https://github.com/LowPowerLab/RFM69
+ *
+ * There are three figures in the piece. The below code is for the first figure -- Node 1. It determines a color, draws itself, and transmits the color to Node 2. 
+ * If Node 2 is listening and receive the color, it will do likewise. Node 2 may be in the middle of a routine and may not "hear" the transmission. 
+ * Node 2 will transmit to Node 3. Just like friends, they will get together (in this case, share the aame color) when the can. But they also do their own things. 
  */
 
 // Pattern types supported:
@@ -119,10 +124,6 @@ class NeoPatterns : public Adafruit_NeoPixel
     {
         if (Direction == FORWARD)
         {
-
-          //Serial.print(Index);
-          //Serial.print("\t");
-          //Serial.println(TotalSteps);
 
            Index++;
            if (Index >= TotalSteps)
@@ -333,7 +334,6 @@ void Strand6Complete();
 
 // Define some NeoPatterns for the two rings and the Strand3
 //  as well as some completion routines
-// *** !!! REDUCING LED count from max to save power -- NOT ANYMORE!!!
 NeoPatterns Strand1(RightLegLEDs, PIN4, NEO_GRB + NEO_KHZ800, &Strand1Complete);  //  - 20
 NeoPatterns Strand2(LeftArmLEDs, PIN3, NEO_GRB + NEO_KHZ800, &Strand2Complete);
 
@@ -385,18 +385,15 @@ NeoPatterns Strand6(BodyLEDs, PIN0, NEO_GRB + NEO_KHZ800, &Strand6Complete);
 // AES encryption (or not):
 
 #define ENCRYPT       true // Set to "true" to use encryption
-#define ENCRYPTKEY    "RAINBOWGLOWARDUI" // Use the same 16-byte key on all nodes
+#define ENCRYPTKEY    "RAINBOWGLOWARDUI" // Use the same 16-byte key on all nodes - if using this code, change the key to your own
 
 // Use ACKnowledge when sending messages (or not):
-
 #define USEACK        false // Request ACKs or not
 
 // Packet sent/received indicator LED (optional):
-
 #define LED           9 // LED positive pin
 
 // Create a library object for our RFM69HCW module:
-
 RFM69 radio;
 
 void setup()
@@ -413,12 +410,10 @@ void setup()
   digitalWrite(LED, LOW);
 
   // Initialize the RFM69HCW:
-
   radio.initialize(FREQUENCY, MYNODEID, NETWORKID);
   radio.setHighPower(); // Always use this for RFM69HCW
 
   // Turn on encryption if desired:
-
   if (ENCRYPT)
     radio.encrypt(ENCRYPTKEY);
 
@@ -466,8 +461,6 @@ void setup()
 //int darknessThreshold = 10;  //configure to your preferences 
 
 int drawingCount = 0; // count how many time figure was drawn
-
-
 int colorCount = 0;
 int sharedColorCounter = 0;
 long previousMillis = 0;
@@ -489,39 +482,7 @@ void loop()
   // Set up a "buffer" for characters that we'll send:
   // static char sendbuffer[62];
 
-/*
-  // If there is any serial input, add it to the buffer:
-  if (Serial.available() > 0)
-  {
-    char input = Serial.read();
-
-    if (input != '\r') // not a carriage return
-    {
-      sendbuffer[sendlength] = input;
-      sendlength++;
-    }
-
-
-     if ((input == '\r') || (sendlength == 61)) // CR or buffer full
-    {
-      // Send the packet!
-      for (byte i = 0; i < sendlength; i++)
-        Serial.print(sendbuffer[i]);
-      Serial.println("]");
-
-      // If you don't need acknowledgements, just use send():
-        radio.send(TONODEID, sendbuffer, sendlength);
-
-      sendlength = 0; // reset the packet
-    }
-
-  }
-*/
-
-  // DID WE RECEIVE COLOR FROM RASPBERRY PI??? !!!
-
-
-  // IF NOT, CHOOSE RANDOM COLOR
+  // Choose a color randomly from the below selection
   // https://htmlcolorcodes.com/color-names/
   /*
 red    rgb(255, 0, 0)
@@ -556,45 +517,6 @@ turquoise rgb(64, 224, 208)
 steelblue rgb(70, 130, 180)
   */
 
-
-
-
-// !!!!!!!  try switch case ???  !!!!!
-
-/*
-//String colorMatrix[28] = {
-char colorMatrix[][28] = {
-"aqu\0",
-"aqm\0",
-"blu\0",
-"cha\0",
-"cor\0",
-"cya\0",
-"fuc\0",
-"gol\0",
-"gre\0",
-"hot\0",
-"ind\0",
-"kha\0",
-"lav\0",
-"lim\0",
-"mar\0",
-"nav\0",
-"oli\0",
-"odr\0",
-"org\0",
-"pin\0",
-"pur\0",
-"red\0",
-"sal\0",
-"sil\0",
-"ste\0",
-"tea\0",
-"tur\0",
-"yel\0"
-};
-
-*/
 
     r = 0; g = 0; b = 0;
 
@@ -742,17 +664,11 @@ char colorMatrix[][28] = {
     //theColor[0] = 'r'; theColor[1] = 'e'; theColor[2] = 'd';
     theColor[0] = randomColor.charAt(0); theColor[1] = randomColor.charAt(1); theColor[2] = randomColor.charAt(2);
 
-    //theColor = theColor.substring(0,2);  //trying to trim off garbage characters on the end
-
-
 
     // Translate RGB to strip color
     //uint32_t currentColor = strip[0].Color(r, g, b);
     currentColor = strip[0].Color(r, g, b);
 
-          //for (byte i = 0; i < sendlength; i++)
-          //  { Serial.print(theColor[i]); }
-          //Serial.println("]");
 
           Serial.println("-------");
           Serial.print("r: ");
@@ -785,7 +701,7 @@ char colorMatrix[][28] = {
 
 
 
-        // WAVE !!!
+        // Simulate waving by using neon-like animation, turning on and off neopixels on different strips
           // If new color WAVE
           wave(currentColor);
 
@@ -808,14 +724,12 @@ char colorMatrix[][28] = {
 
     // MORPH COLOR !!!
     // R G B +/- random amount
+    // causes selected color to slightly change with each drawing cycle, to provide variability
 
       // randomly choose plus or minus
       //bool blnPlusMinus = random(0,1);
             Serial.print("blnPlusMinus: ");
             Serial.println(blnPlusMinus);
-
-      // choose random amount to change
-      //int morphAmount = random(10, 50);
 
 
     for (int j = 0; j < 3; j++)
