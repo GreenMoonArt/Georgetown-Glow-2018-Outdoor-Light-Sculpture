@@ -1,5 +1,5 @@
-#Friends
-##Arduino NeoPixel Light Sculpture
+# Friends
+## Arduino NeoPixel Light Sculpture
 
 This project was an outdoor light sculpture for Georgetown Glow 2018. https://www.georgetownglowdc.com/glow
 
