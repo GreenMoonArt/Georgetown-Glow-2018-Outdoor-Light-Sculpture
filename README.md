@@ -15,7 +15,4 @@ This represented how friends communicate and interact -- sometimes they are all 
 Threee Arduino Megas were used, along with RFM69 transceivers. 
 
 
-
-![Rainbow Friends](RainbowFriends.jpg?s=300)
-
 <img src="RainbowFriends.jpg" alt="Rainbow Friends" width="300" />
