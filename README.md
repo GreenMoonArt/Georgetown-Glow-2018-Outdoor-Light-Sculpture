@@ -16,5 +16,5 @@ Threee Arduino Megas were used, along with RFM69 transceivers.
 
 
 
-![Rainbow Friends](RainbowFriends.jpg)
+![Rainbow Friends](RainbowFriends.jpg | width=300)
 
